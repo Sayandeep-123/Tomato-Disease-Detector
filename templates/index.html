@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script language="javascript" type="text/javascript">
+$(function () {
+    $("#imageUpload").change(function () {
+        $("#dvPreview").html("");
+        var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+        if (regex.test($(this).val().toLowerCase())) {
+            if ($.browser.msie && parseFloat(jQuery.browser.version) <= 9.0) {
+                $("#dvPreview").show();
+                $("#dvPreview")[0].filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = $(this).val();
+            }
+            else {
+                if (typeof (FileReader) != "undefined") {
+                    $("#dvPreview").show();
+                    $("#dvPreview").append("<img />");
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $("#dvPreview img").attr("src", e.target.result);
+                    }
+                    reader.readAsDataURL($(this)[0].files[0]);
+                } else {
+                    alert("This browser does not support FileReader.");
+                }
+            }
+        } else {
+            alert("Please upload a valid image file.");
+        }
+    });
+});
+
+
+</script>
+
+<div style = "position:relative; left:450px; top:40px;">
+    <form id="upload-file" method="post" enctype="multipart/form-data">
+    <div class= "custom-file">
+        <label for="imageUpload" class="upload-label" style="cursor: pointer;">Upload Image</label>
+        <input type="file" name="file" id="imageUpload" accept=".png, .jpg, .jpeg" onchange="loadFile(event)" style="display: none;">
+    </div>
+    <div id="dvPreview"></div>    
+
+    <div class="image-section" >
+    <br>
+    <br>
+        <div>
+            <button type="submit" class="btn btn-primary btn-lg " id="btn-predict" >Predict!</button>
+        </div>
+    </div>
+    </form>
+    <br>
+    <h2>{{ prediction_text }} </h2>
+
+</div>
+
+{% endblock %}
